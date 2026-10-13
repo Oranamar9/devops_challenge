@@ -22,7 +22,9 @@ List the main prompts you used. Paraphrasing is fine.
 2. "nginx is up and the backend works on its own, but requests through the proxy return 502. Help me analyze these proxy logs and find where the connection between them fails."
 (followed by the proxy logs showing "connect() failed (111: Connection refused) while connecting to upstream")
 
-3. `"The tests fail because they run before the backend has finished loading. Can I add a healthcheck for the backend in docker-compose.yml, so the tests won't start until it's fully up?"
+3. "The tests fail because they run before the backend has finished loading. Can I add a healthcheck for the backend in docker-compose.yml, so the tests won't start until it's fully up?"
+
+4. "CI fails with 'Permission denied' (exit code 126) on ./scripts/run-tests.sh. If I run chmod +x on the script and push, will that fix it for CI and for anyone who clones the repo?"
 
 ---
 
@@ -32,7 +34,7 @@ Describe **one concrete case** where the AI's answer was wrong, outdated, or
 sub-optimal. Cover: what it suggested, how you noticed it was wrong, and what
 you did instead. 3–5 sentences.
 
-> ...
+> The AI suggested nginx:1.28-alpine as the base image. When I checked nginx.org, I saw the current stable version is 1.30, and nginx only supports the latest stable branch, so 1.28 no longer gets security fixes. I switched to nginx:1.30-alpine.
 
 ---
 

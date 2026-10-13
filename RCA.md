@@ -115,12 +115,23 @@ The healthcheck is reliable: we only move forward once the container is up and i
 ## Defect 4: CI pipeline fails
 
 ### Symptom / error output
+The GitHub Actions job failed at the "Execute test suite" step, before any test ran:
+
+```
+/home/runner/work/_temp/8414b550-e026-485a-8981-8d6a25921b0c.sh: line 1: ./scripts/run-tests.sh: Permission denied
+Error: Process completed with exit code 126.
+```
 
 ### How I diagnosed it
+1. Opened the failed run in the Actions tab of my repo and read the log of the "Execute test suite" step.
+2. The error was "Permission denied" with exit code 126. I searched online and learned that 126 means the file was found but isn't allowed to run, so it's an execute permission problem and not a problem in the script itself.
+3. Checked .github/workflows/ci.yml: it runs ./scripts/run-tests.sh directly, which requires the file to be executable.
 
 ### Root cause
+scripts/run-tests.sh was committed without execute permission. GitHub Actions makes a fresh clone of the repo, so it got a file that isn't allowed to run.
 
 ### Fix
+Gave the script execute permission on my machine with chmod +x scripts/run-tests.sh, then committed and pushed the change. Now every fresh clone, including CI, gets an executable file, so it stays fixed for whoever clones the repo next.
 
 ---
 
