@@ -1,12 +1,16 @@
-# Proxy image inherited from the previous team.
+# Official nginx image, small Alpine version
+FROM nginx:1.30.5-alpine
 
-FROM ubuntu:24.04
-
+# Replace the default config with ours
 COPY nginx.conf /etc/nginx/nginx.conf
 
-RUN apt-get update && \
-    apt-get install -y nginx curl htop vim git
+# Give the nginx user ownership of the folder nginx writes temp files to
+RUN chown -R nginx:nginx /var/cache/nginx
+
+# Run as the "nginx" user instead of root
+USER nginx
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx in the foreground, with its PID file in /tmp (a non-root user can write there)
+CMD ["nginx", "-g", "pid /tmp/nginx.pid; daemon off;"]
