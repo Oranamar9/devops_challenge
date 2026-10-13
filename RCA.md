@@ -139,8 +139,26 @@ Gave the script execute permission on my machine with chmod +x scripts/run-tests
 
 Optional. Answer only the ones you got to — number them, skip the rest.
 
->
+1. **Smaller proxy image**
+   - Changed the base image from ubuntu:24.04 to the official nginx:1.30.5-alpine, which already includes nginx, so there is no apt-get step at all.
+   - Removed tools the proxy doesn't need at runtime: curl, htop, vim and git. Fewer packages also means fewer tools for an attacker to use if the container is compromised.
+   - Image size: 485 MB before (ubuntu:24.04 with nginx and the extra tools) → 92.1 MB after (nginx:1.30.5-alpine).
+
+2. **Running the proxy as a non-root user**
+   - Added USER nginx to the Dockerfile. The nginx user already exists in the official image, so no need to create it.
+   - nginx writes temporary files to /var/cache/nginx, which belongs to root, so I gave the nginx user ownership of it with chown -R nginx:nginx /var/cache/nginx.
+   - nginx saves its PID file to /var/run by default, which is also owned by root, so I moved it to /tmp with -g "pid /tmp/nginx.pid; daemon off;" in the CMD.
+   - The proxy still listens on port 80. Docker allows non-root processes to bind low ports inside containers, so no change was needed in nginx.conf or docker-compose.yml.
+
+3. **Additional improvements**
+   - Pinned the base image to the exact version nginx:1.30.5-alpine instead of latest, so every build is identical. The trade-off is that security patches need a manual version bump.
+   - Added healthchecks to the backend and the proxy, so services start only when the ones they depend on are actually ready.
 
 ---
 
 ## Anything you would do differently with more time
+
+- Stronger CI checks. Add a Dockerfile linter (hadolint) and an image vulnerability scan (Trivy) to the pipeline, so problems like the ones in this challenge are caught before they reach main.
+
+- Learn more about the backend. The backend loads its config from what's meant to be a remote config service, which is why it needs about 8 seconds to start. My healthcheck timings are based on what I saw on my own machine. With more time, I'd find out how slow startup can get in a real environment (for example, if the config service is under load) and set the healthcheck limits based on that.
+

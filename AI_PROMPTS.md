@@ -34,7 +34,7 @@ Describe **one concrete case** where the AI's answer was wrong, outdated, or
 sub-optimal. Cover: what it suggested, how you noticed it was wrong, and what
 you did instead. 3–5 sentences.
 
-> The AI suggested nginx:1.28-alpine as the base image. When I checked nginx.org, I saw the current stable version is 1.30, and nginx only supports the latest stable branch, so 1.28 no longer gets security fixes. I switched to nginx:1.30-alpine.
+> The AI suggested nginx:1.28-alpine as the base image. When I checked nginx.org, I saw the current stable version is 1.30.5, and nginx only supports the latest stable branch, so 1.28 no longer gets security fixes. I switched to nginx:1.30.5-alpine.
 
 ---
 

@@ -1,5 +1,5 @@
 # Official nginx image, small Alpine version
-FROM nginx:1.30-alpine
+FROM nginx:1.30.5-alpine
 
 # Replace the default config with ours
 COPY nginx.conf /etc/nginx/nginx.conf
